@@ -9,16 +9,18 @@ We evaluated our proposal with synthetic and experimental datasets from the remo
 
 The performance is compared with two state-of-the-art unmixing methods based on MMM: (i) Multilinear Mixing Model for Nonlinear Spectral Unmixing [(MMMNSU)](https://doi.org/10.1109/TGRS.2015.2453915) (end-members initialized by [VCA](https://doi.org/10.1109/TGRS.2005.844293)), and (ii) Unsupervised Nonlinear Spectral Unmixing Based on MMM [(UNSUBMMM)](https://doi.org/10.1109/TGRS.2017.2693366). <br>
 
-The file PlotSyntheticTestVNIR.m evaluates the unmixing of the syntetic dataset. As example, the following image shows the estimated abundance maps, and the histogram of the resulting nonlinear interaction level. <br>
+
+
+The file PlotSyntheticDatabase_Figures2_3.m evaluates the unmixing of the syntetic dataset. As example, the following image shows the estimated abundance maps, and the histogram of the resulting nonlinear interaction level. <br>
 
  <img src='SyntheticEstimatedMaps.png'> <br>
  
- The file PlotNonLinearTestCuprite.m evaluates the unmixing of the Cuprite dataset. As example, the following image shows the map of resulting the nonlinear interaction level.<br>
+ The file PlotNonLinearTestCuprite_Figure5.m evaluates the unmixing of the Cuprite dataset. As example, the following image shows the map of resulting the nonlinear interaction level.<br>
  
  <img src='NICuprite.png'> <br>
  
- The file PlotNonLinearTestCuprite.m evaluates the unmixing of the for Urban Dataset.
- 
+ The file PlotNonLinearTestUrban_Figures6_7 evaluates the unmixing of the for Urban Dataset.
+ The file PlotNonlinearVNIR_invivoBrain_Figure8.m unmix the in-vivo dataset (Due to data size restrictions in github, please contact the authors requesting VNIR type images). 
  
  
  | [Paper]()  <br>
