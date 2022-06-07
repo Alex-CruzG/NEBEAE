@@ -1,4 +1,4 @@
-# NEBEAE
+# Nonlinear Extended Blind End-member and Abundance Extraction
 Matlab implementation of Nonlinear Extended Blind End-member and Abundance Extraction (NEBEAE) algorithm. <br><br>
 NEBEAE implements a blind hyperspectral unmixing based on the multilinear mixing model [(MMM)](10.1109/TGRS.2015.2453915).<br>
 
