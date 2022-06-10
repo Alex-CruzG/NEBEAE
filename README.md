@@ -23,7 +23,7 @@ The file PlotSyntheticDatabase_Figures2_3.m evaluates the unmixing of the syntet
  The file PlotNonlinearVNIR_invivoBrain_Figure8.m unmix the in-vivo dataset (Due to data size restrictions in github, please contact the authors requesting VNIR type images). 
  
  
- | [Paper]()  <br>
+ | [Pre-print paper](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4111839)  <br>
  Nonlinear Extended Blind End-member and Abundance Extraction for Hyperspectral Images <br>
  [Daniel U. Campos-Delgado](https://orcid.org/0000-0002-1555-0131)<sup>1,2</sup>, 
  [Inés A. Cruz-Guerrero](https://orcid.org/0000-0001-8034-8530)<sup>2</sup> 
