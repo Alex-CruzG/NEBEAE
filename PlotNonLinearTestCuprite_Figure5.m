@@ -100,12 +100,12 @@ xlabel('d_k');
 grid on;
 subplot(312)
 hist(D3,50);
-title('Nonlinear Interaction Level by Supervised-NSUMMM');
+title('Nonlinear Interaction Level by Supervised-MMMNSU');
 xlabel('d_k');
 grid on;
 subplot(313)
 hist(D4,50);
-title('Nonlinear Interaction Level by Unsupervised-NSUMMM');
+title('Nonlinear Interaction Level by Unsupervised-UNSUBMMM');
 xlabel('d_k');
 grid on;
 %%
@@ -122,10 +122,10 @@ imagesc(reshape(D,nRow,nCol), [min([D;D3';D4]), max([D;D3';D4])]); colormap;
 title('(b) NEBEAE');
 subplot(1,4,3);
 imagesc(reshape(D3,nRow,nCol),[min([D;D3';D4]), max([D;D3';D4])]);  
-title('(c) Supervised-NSUMMM');
+title('(c) Supervised-MMMNSU');
 subplot(1,4,4);
 imagesc(reshape(D4,nRow,nCol), [min([D;D3';D4]), max([D;D3';D4])]);  
-title('(d) Unsupervised-NSUMMM');
+title('(d) Unsupervised-UNSUBMMM');
 orient landscape
 
 %%
