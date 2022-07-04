@@ -1,0 +1,183 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% Synthetic Evaluation of Unmixing with Nonlinear Model
+%
+% SLB7 End-members
+%
+% DUCD
+% June/2022
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+sSNR=[20 25 30 35 40];     %% Test with 50, 52.5, 55 y 57.5 dB
+pPSNR=[20 25 30 35 40];
+Nsamples=60;
+n=4;
+ModelType=5;
+Rep=2;
+
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Define Paremeters of NEBEAE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+initcond=8;             % Initial condition of end-members matrix: 6 (VCA) and 8 (SISAL).
+rho=0.1;               % Similarity weight in end-members estimation
+lambda=0.1;             % Entropy weight for abundance estimation
+epsilon=1e-3;
+maxiter=50;
+parallel=0;
+normalization=1;
+downsampling=0.25;       % Downsampling in end-members estimation
+disp_iter=0;            % Display partial performance in BEAE
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Initialize Performance Metrics
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+ResultsYh=zeros(5,3,Rep);
+ResultsAh=zeros(5,3,Rep);
+ResultsPh=zeros(5,3,Rep);
+ResultsTh=zeros(5,3,Rep);
+ResultsPh2=zeros(5,3,Rep);
+
+for index=1:length(sSNR)
+    SNR=sSNR(index);
+    PSNR=pPSNR(index);
+    if SNR<31 
+        initcond=6;
+    else
+        initcond=8;
+    end
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Execute Blind Estimation Methodologies 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
+    disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
+    disp('Synthetic VNIR Datasets');
+    disp('Blind Unmixing Estimation');
+    disp(['SNR =' num2str(SNR) ' dB']);
+    disp(['PSNR =' num2str(PSNR) ' dB']);
+    disp(['initcond =' num2str(initcond)]);
+    disp(['Number of end-members=' num2str(n)]);
+    for j=1:Rep 
+        [Z,Po,Ao,Go]=VNIRsynth(n,Nsamples,SNR,PSNR,ModelType);
+        [L,K]=size(Z);
+        Y=Z;
+        disp(['Iteration=' num2str(j)])        
+%%
+        tic;
+        disp('%%%%%%%%%%%%%%%%%%');
+        disp('NEBEAE');
+        paramvec=[initcond,rho,lambda,epsilon,maxiter,downsampling,parallel,disp_iter];
+        [P1,A1,D1,G1,Zh1]=NEBEAE2(Z,n,paramvec);
+        Tnbeae=toc;
+        ResultsYh(index,1,j)=norm(Zh1-Z,'fro')/norm(Z,'fro');
+        ResultsAh(index,1,j)=errorabundances(Ao,(A1.*repmat(G1',[n,1])));
+        ResultsPh(index,1,j)=errorendmembers(Po,P1);
+        ResultsPh2(index,1,j)=errorSAM(Po,P1);
+        ResultsTh(index,1,j)=Tnbeae;
+  
+        %%
+        tic;
+        disp('%%%%%%%%%%%%%%%%%%');
+        disp('Supervised MLM');
+        P_min=-100;
+        options=optimset('fmincon');
+        options = optimset(options,'Display','off','Algorithm','sqp','MaxFunEvals',50000,'TolFun',1e-10,'TolCon',1e-8,'GradObj','off');
+        Aa3=zeros(n+1,K); % The first p variables are the abundances, the p+1'th variable contains the P value
+        Zh3=zeros(L,K);
+        P3=VCA(Z,n);
+        Aini=pinv(P3)*Z;
+        Aini(Aini<0)=0;
+        Aini=Aini./repmat(sum(Aini),[n,1]);
+        for i=1:K
+            a_ini=[Aini(:,i); 0.0]; % Initialize with linear unmixing results, P=0
+            % Sum-to-one applies to abundances, not P. P is restricted to [P_min,1]
+            Aa3(:,i) = fmincon(@(a) sum((Z(:,i)-model_MLM(a,P3)).^2), a_ini,[],[],[ones(1,n) 0],1,[zeros(n,1); P_min],ones(n+1,1),[],options);
+            Zh3(:,i) = model_MLM(Aa3(:,i),P3);
+        end
+        Tsmlm=toc;
+        P3=P3./repmat(sum(P3),[L,1]);
+        A3=Aa3(1:n,:);
+        D3=Aa3(n+1,:);
+        ResultsYh(index,2,j)=norm(Zh3-Z,'fro')/norm(Z,'fro');
+        ResultsAh(index,2,j)=errorabundances(Ao,A3);
+        ResultsPh(index,2,j)=errorendmembers(Po,P3);
+        ResultsPh2(index,2,j)=errorSAM(Po,P3);
+        ResultsTh(index,2,j)=Tsmlm;
+
+        tic;
+        disp('%%%%%%%%%%%%%%%%%%');
+        disp('Unsupervised MLM');
+        [P4,A4, D4,Zh4,~]=unmix(Z,n,maxiter);
+        Tumlm=toc;
+        P4=P4./repmat(sum(P4),[L,1]);
+        ResultsYh(index,3,j)=norm(Zh4-Z,'fro')/norm(Z,'fro');
+        ResultsAh(index,3,j)=errorabundances(Ao,A4);
+        ResultsPh(index,3,j)=errorendmembers(Po,P4);
+        ResultsPh2(index,3,j)=errorSAM(Po,P4);
+        ResultsTh(index,3,j)=Tumlm;
+        
+        
+    end
+end
+
+
+%%
+AAnd=[' & ';' & ';' & ';' & ';' & '];
+PM=[' $\pm$ '; ' $\pm$ '; ' $\pm$ '; ' $\pm$ '; ' $\pm$ '];
+EEnd=[' \\'; ' \\'; ' \\'; ' \\'; ' \\'];
+disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
+disp('Mean Responses in Performance Metrics')
+disp('SNR/PSNR     NEBEAE      sMLM       uMLM');
+disp('%%%%%%%%%%%%%%%');
+disp('Error in Output Estimation (%)');
+disp([num2str(int8(sSNR')) AAnd num2str(mean(ResultsYh(:,1,:),3)) PM  num2str(std(ResultsYh(:,1,:),[],3)) ...
+    AAnd num2str(mean(ResultsYh(:,2,:),3)) PM num2str(std(ResultsYh(:,2,:),[],3)) ...
+    AAnd num2str(mean(ResultsYh(:,3,:),3)) PM num2str(std(ResultsYh(:,3,:),[],3)) EEnd]);
+disp('%%%%%%%%%%%%%%%');
+disp('Error in Abundance Estimation (%)');
+disp([num2str(int8(sSNR')) AAnd num2str(mean(ResultsAh(:,1,:),3)) PM  num2str(std(ResultsAh(:,1,:),[],3)) ...
+    AAnd num2str(mean(ResultsAh(:,2,:),3)) PM num2str(std(ResultsAh(:,2,:),[],3)) ...
+    AAnd num2str(mean(ResultsAh(:,3,:),3)) PM num2str(std(ResultsAh(:,3,:),[],3)) EEnd]);
+disp('%%%%%%%%%%%%%%%');
+disp('Error in End-member Estimation');
+disp([num2str(int8(sSNR')) AAnd num2str(mean(ResultsPh(:,1,:),3)) PM  num2str(std(ResultsPh(:,1,:),[],3)) ...
+    AAnd num2str(mean(ResultsPh(:,2,:),3)) PM num2str(std(ResultsPh(:,2,:),[],3)) ...
+    AAnd num2str(mean(ResultsPh(:,3,:),3)) PM num2str(std(ResultsPh(:,3,:),[],3)) EEnd]);
+disp('%%%%%%%%%%%%%%%');
+disp('Error in End-member Estimation (SAM)');
+disp([num2str(int8(sSNR')) AAnd num2str(mean(ResultsPh2(:,1,:),3)) PM  num2str(std(ResultsPh2(:,1,:),[],3)) ...
+    AAnd num2str(mean(ResultsPh2(:,2,:),3)) PM num2str(std(ResultsPh2(:,2,:),[],3)) ...
+    AAnd num2str(mean(ResultsPh2(:,3,:),3)) PM num2str(std(ResultsPh2(:,3,:),[],3)) EEnd]);
+disp('%%%%%%%%%%%%%%%');
+disp('Error in Computation Time');
+disp([num2str(int8(sSNR')) AAnd num2str(mean(ResultsTh(:,1,:),3)) PM  num2str(std(ResultsTh(:,1,:),[],3)) ...
+    AAnd num2str(mean(ResultsTh(:,2,:),3)) PM num2str(std(ResultsTh(:,2,:),[],3)) ...
+    AAnd num2str(mean(ResultsTh(:,3,:),3)) PM num2str(std(ResultsTh(:,3,:),[],3)) EEnd]);
+
+
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ANOVA Analysis
+
+TabAnova=zeros(length(sSNR),5);
+for j=1:4
+    for index=1:length(sSNR)
+        if j==1,
+            TabAnova(index,j)=anova1(squeeze(ResultsYh(index,:,:))',[],'off');
+        elseif j==2
+            TabAnova(index,j)=anova1(squeeze(ResultsAh(index,:,:))',[],'off');
+        elseif j==3
+            TabAnova(index,j)=anova1(squeeze(ResultsPh(index,:,:))',[],'off');
+        elseif j==4
+            TabAnova(index,j)=anova1(squeeze(ResultsPh2(index,:,:))',[],'off');
+        else
+            TabAnova(index,j)=anova1(squeeze(ResultsTh(index,:,:))',[],'off');
+        end
+    end
+end
+
+display(TabAnova)
