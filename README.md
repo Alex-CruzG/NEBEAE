@@ -15,11 +15,18 @@ The file PlotSyntheticDatabase_Figures2_3.m evaluates the unmixing of the syntet
 
  <img src='SyntheticEstimatedMaps.png'> <br>
  
- The file PlotNonLinearTestCuprite_Figure5.m evaluates the unmixing of the Cuprite dataset. As example, the following image shows the map of resulting the nonlinear interaction level.<br>
+ The file Table5_Figure5Cuprite.m evaluates the unmixing of the Cuprite dataset. As example, the following image shows the map of resulting the nonlinear interaction level.<br>
  
  <img src='NICuprite.png'> <br>
  
- The file PlotNonLinearTestUrban_Figures6_7 evaluates the unmixing of the for Urban Dataset.
+ The file Table6_Figure6Urban.m evaluates the unmixing of the for Urban Dataset.
+  
+  <img src='NIUrban.png'> <br>
+
+ The file Table7_Figure7Pavia.m evaluates the unmixing of the for Pavia Dataset.
+ 
+   <img src='NIPavia.png'> <br>
+ 
  The file PlotNonlinearVNIR_invivoBrain_Figure8.m unmix the in-vivo dataset (Due to data size restrictions in github, please contact the authors requesting VNIR type images). 
  
  
