@@ -30,7 +30,7 @@ The file PlotSyntheticDatabase_Figures2_3.m evaluates the unmixing of the syntet
  The file PlotNonlinearVNIR_invivoBrain_Figure8.m unmix the in-vivo dataset (Due to data size restrictions in github, please contact the authors requesting VNIR type images). 
  
  
- | [Pre-print paper](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4111839)  <br>
+ | [Paper](https://www.sciencedirect.com/science/article/pii/S0165168422002572)  <br>
  Nonlinear Extended Blind End-member and Abundance Extraction for Hyperspectral Images <br>
  [Daniel U. Campos-Delgado](https://orcid.org/0000-0002-1555-0131)<sup>1,2</sup>, 
  [Inés A. Cruz-Guerrero](https://orcid.org/0000-0001-8034-8530)<sup>2</sup> 
@@ -46,4 +46,17 @@ The file PlotSyntheticDatabase_Figures2_3.m evaluates the unmixing of the syntet
 Submitted to Signal Processing (Elsevier).
 
 
- 
+ ```
+@article{CAMPOSDELGADO2022108718,
+title = {Nonlinear extended blind end-member and abundance extraction for hyperspectral images},
+journal = {Signal Processing},
+volume = {201},
+pages = {108718},
+year = {2022},
+issn = {0165-1684},
+doi = {https://doi.org/10.1016/j.sigpro.2022.108718},
+url = {https://www.sciencedirect.com/science/article/pii/S0165168422002572},
+author = {Daniel U. Campos-Delgado and Inés A. Cruz-Guerrero and Juan N. Mendoza-Chavarría and Aldo R. Mejía-Rodríguez and Samuel Ortega and Himar Fabelo and Gustavo M. Callico},
+keywords = {Nonlinear unmixing, Hyperspectral imaging, Multi-linear model}
+}
+```
